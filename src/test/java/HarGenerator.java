@@ -10,8 +10,7 @@ import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
+import static com.codeborne.selenide.Selenide.*;
 
 public class HarGenerator {
     @Test
@@ -57,5 +56,6 @@ public class HarGenerator {
         File harFile = new File(projectDir, "logOfBrowser"+ formater.format(new Date()) + ".har");
         har.writeTo(harFile);
         System.out.println("Har file saved to " + harFile.getAbsolutePath());
+        server.abort();
     }
 }
