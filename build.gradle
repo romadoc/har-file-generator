@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'com.codeborne:selenide:6.12.4'
+    implementation "io.netty:netty-all:4.1.58.Final"
+    //testImplementation 'net.lightbody.bmp:browsermob-core:2.1.5'
+    implementation 'com.codeborne:selenide-proxy:6.12.3'
+}
+
+test {
+    useJUnitPlatform()
+}
