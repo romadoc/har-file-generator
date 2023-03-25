@@ -43,11 +43,12 @@ public class HarGenerator {
         server.setHarCaptureTypes(com.browserup.bup.proxy.CaptureType.getResponseCaptureTypes());
 
         server.newHar("TestHar");
-        //открывающаяся страница. сделать метод не тестовым, а статиком, передавая сюда адрес страницы
+        /*открывающаяся страница. сделать метод не тестовым, а статиком, передавая сюда адрес страницы,
+        вызывая его в нужном месте */
         open("http://google.com");
 
         // Блок получения харника
-        sleep(5000); //спим 5 сек, что бы запросы выполнились
+        sleep(5000); // открыв нужную страницу, спим 5 сек, что бы запросы выполнились и загрузились
         Har har = server.getHar();
         //сохранение файла в директорию проекта
         String userDir = System.getProperty("user.dir");
