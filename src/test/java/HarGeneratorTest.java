@@ -1,26 +1,49 @@
+/**
+ * Данный способ генерации har файла сделан в виде теста.
+ * в блоке @BeforeSuite настройка и запуск прокси
+ * в блоке @Test выполнение прописывается тестовый сценарий
+ * в блоке @AfterSuite выполняется создание и сохранение har файла. Файл сохраняется в директорию проекта
+ * в формате - logOfBrowserДатаВремяСоздания.har
+ *
+ */
+
 import com.browserup.bup.BrowserUpProxyServer;
 import com.browserup.harreader.model.*;
 import com.codeborne.selenide.Configuration;
-import org.junit.jupiter.api.Test;
+
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.remote.CapabilityType;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import static com.codeborne.selenide.Selenide.*;
 
-public class HarGenerator {
-    @Test
-    public void generateHar() throws IOException {
-        BrowserUpProxyServer server = new BrowserUpProxyServer();
-        server.setTrustAllServers(true);
 
-        ServerSocket serverSocket = new ServerSocket(0);
+public class HarGeneratorTest {
+    BrowserUpProxyServer server = new BrowserUpProxyServer();
+    @BeforeSuite
+    public void startProxy() {
+        //настройка сервера, прокси, старт прокси
+        server.setTrustAllServers(true);
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         int port = serverSocket.getLocalPort();
-        serverSocket.close();
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         server.start();
         Proxy seleniumProxy = new Proxy();
         seleniumProxy.setHttpProxy("localhost:" + server.getPort());
@@ -43,20 +66,32 @@ public class HarGenerator {
         server.setHarCaptureTypes(com.browserup.bup.proxy.CaptureType.getResponseCaptureTypes());
 
         server.newHar("TestHar");
-        /*открывающаяся страница. сделать метод не тестовым, а статиком, передавая сюда адрес страницы,
-        вызывая его в нужном месте */
-        open("http://google.com");
+    }
+    @Test
+    public void generateHarTest() {
+       //выполнение тестового сценария. заметить на свой
+        open("http://google.com"); //если open() осуществляется при загрузке фрейморка, то перед его загрузкой должен быть запущен проксисервер
+        $x("//input[@name='q']").sendKeys("мемасики про котов", Keys.ENTER);
+    }
 
-        // Блок получения харника
+    @AfterSuite
+    public void generateHar() {
+        //генерация харника
         sleep(5000); // открыв нужную страницу, спим 5 сек, что бы запросы выполнились и загрузились
         Har har = server.getHar();
-        //сохранение файла в директорию проекта
+        //сохранение har файла в директорию проекта
         String userDir = System.getProperty("user.dir");
         File projectDir = new File(userDir);
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
         File harFile = new File(projectDir, "logOfBrowser"+ formater.format(new Date()) + ".har");
-        har.writeTo(harFile);
+        try {
+            har.writeTo(harFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Har file saved to " + harFile.getAbsolutePath());
         server.abort();
     }
+
+
 }

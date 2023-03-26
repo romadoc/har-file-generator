@@ -2,6 +2,7 @@
  * Сканер свободных портов. Задать стартовый порт и конечный порт. Итог - выведение списка
  * @Author: Raman Darashenka
  */
+package freeportfinder;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -19,7 +20,7 @@ public class FreePortFinder {
                 try (ServerSocket serverSocket = new ServerSocket(port)) {
                     freePorts.add(port);
                 } catch (IOException e) {
-
+                    System.out.println("faled " + e);
                 }
             }
 
