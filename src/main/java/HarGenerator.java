@@ -46,6 +46,7 @@ public class HarGenerator {
             throw new RuntimeException(e);
         }
         server.start();
+
         Proxy seleniumProxy = new Proxy();
         seleniumProxy.setHttpProxy("localhost:" + server.getPort());
         seleniumProxy.setSslProxy("localhost:" + server.getPort());
